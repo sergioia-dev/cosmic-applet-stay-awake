@@ -80,9 +80,15 @@ impl cosmic::Application for AppModel {
     /// This view should emit messages to toggle the applet's popup window, which will
     /// be drawn using the `view_window` method.
     fn view(&self) -> Element<'_, Self::Message> {
+        let icon = if self.stay_awake {
+            "com.user.CosmicAppletStayAwake-awake-symbolic"
+        } else {
+            "com.user.CosmicAppletStayAwake-moon-symbolic"
+        };
+
         self.core
             .applet
-            .icon_button("display-symbolic")
+            .icon_button(icon)
             .on_press(Message::TogglePopup)
             .into()
     }

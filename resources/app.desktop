@@ -2,7 +2,7 @@
 Name=Stay Awake
 Comment=Keep the system awake while the lid is closed.
 Type=Application
-Icon=com.user.CosmicAppletStayAwake
+Icon=com.user.CosmicAppletStayAwake-awake-symbolic
 Exec=cosmic-applet-stay-awake %F
 Terminal=false
 StartupNotify=true

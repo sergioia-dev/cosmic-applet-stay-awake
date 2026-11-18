@@ -12,7 +12,8 @@ cargo-target-dir := env('CARGO_TARGET_DIR', 'target')
 appdata-dst := base-dir / 'share' / 'appdata' / appdata
 bin-dst := base-dir / 'bin' / name
 desktop-dst := base-dir / 'share' / 'applications' / desktop
-icon-dst := base-dir / 'share' / 'icons' / 'hicolor' / 'scalable' / 'apps' / appid + '.svg'
+awake-icon-dst := base-dir / 'share' / 'icons' / 'hicolor' / 'scalable' / 'apps' / appid + '-awake-symbolic.svg'
+moon-icon-dst := base-dir / 'share' / 'icons' / 'hicolor' / 'scalable' / 'apps' / appid + '-moon-symbolic.svg'
 
 # Default recipe which runs `just build-release`
 default: build-release
@@ -54,11 +55,12 @@ install:
     install -Dm0755 {{ cargo-target-dir / 'release' / name }} {{bin-dst}}
     install -Dm0644 {{ 'target' / 'xdgen' / 'app.desktop' }} {{desktop-dst}}
     install -Dm0644 {{ 'target' / 'xdgen' / 'app.metainfo.xml' }} {{appdata-dst}}
-    install -Dm0644 resources/icon.svg {{icon-dst}}
+    install -Dm0644 resources/awake.svg {{awake-icon-dst}}
+    install -Dm0644 resources/moon.svg {{moon-icon-dst}}
 
 # Uninstalls installed files
 uninstall:
-    rm {{bin-dst}} {{desktop-dst}} {{icon-dst}}
+    rm {{bin-dst}} {{desktop-dst}} {{awake-icon-dst}} {{moon-icon-dst}}
 
 # Vendor dependencies locally
 vendor:
