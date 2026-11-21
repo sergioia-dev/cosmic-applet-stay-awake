@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 mod app;
+mod bluetooth;
 mod i18n;
 mod inhibitor;
 mod lid_display;

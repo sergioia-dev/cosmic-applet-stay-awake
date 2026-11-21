@@ -4,6 +4,8 @@
 
 use cosmic::iced::futures::StreamExt;
 
+use crate::bluetooth;
+
 const FALLBACK_OUTPUT: &str = "eDP-1";
 
 /// Starts the lid watcher. Dropping the handle does not stop it; abort it to stop.
@@ -22,7 +24,16 @@ pub fn enable_internal() {
     });
 }
 
+async fn ensure_bluetooth_powered() {
+    if let Err(why) = bluetooth::ensure_powered().await {
+        eprintln!("failed to power on bluetooth: {why}");
+    }
+}
+
 async fn watch_lid() -> zbus::Result<()> {
+    // Covers the lid already being closed when the applet is toggled on.
+    ensure_bluetooth_powered().await;
+
     let connection = zbus::Connection::system().await?;
     let proxy = zbus::Proxy::new(
         &connection,
@@ -36,7 +47,16 @@ async fn watch_lid() -> zbus::Result<()> {
     let mut lid_closed = proxy.receive_property_changed::<bool>("LidIsClosed").await;
     while let Some(change) = lid_closed.next().await {
         match change.get().await {
-            Ok(closed) => set_panel_power(&output, !closed).await,
+            Ok(closed) => {
+                set_panel_power(&output, !closed).await;
+                if closed {
+                    // The system's own soft-block lands on lid close, so run after it.
+                    tokio::spawn(async {
+                        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+                        ensure_bluetooth_powered().await;
+                    });
+                }
+            }
             Err(why) => eprintln!("failed to read UPower LidIsClosed: {why}"),
         }
     }
