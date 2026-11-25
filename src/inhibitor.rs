@@ -9,7 +9,7 @@ pub struct InhibitLock {
     _fd: zbus::OwnedFd,
 }
 
-/// Blocks logind's lid-switch and idle handling until the lock is dropped.
+/// Blocks logind's suspend, lid-switch, and idle handling until the lock is dropped.
 pub async fn acquire() -> zbus::Result<InhibitLock> {
     let connection = zbus::Connection::system().await?;
     let proxy = zbus::Proxy::new(
@@ -24,7 +24,7 @@ pub async fn acquire() -> zbus::Result<InhibitLock> {
         .call(
             "Inhibit",
             &(
-                "handle-lid-switch:idle",
+                "sleep:handle-lid-switch:idle",
                 "cosmic-applet-stay-awake",
                 "Stay-awake applet active",
                 "block",
